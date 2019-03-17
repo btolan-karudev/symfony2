@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{% block title 'CucuTitle'%}
+{% block body %}
+
+    {% for i in 1..count %}
+        <p>
+            Hello {{ name|upper }} # {{ i }} !
+        </p>
+    {% endfor %}
+
+{% endblock %}
+
+
