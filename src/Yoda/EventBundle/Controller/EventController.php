@@ -5,6 +5,7 @@ namespace Yoda\EventBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Yoda\EventBundle\Entity\Event;
 use Yoda\EventBundle\Form\EventType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -29,10 +30,11 @@ class EventController extends Controller
 
         $entities = $em->getRepository('EventBundle:Event')->findAll();
 
-        return  array(
+        return array(
             'entities' => $entities,
         );
     }
+
     /**
      * Creates a new Event entity.
      *
@@ -53,7 +55,7 @@ class EventController extends Controller
 
         return $this->render('EventBundle:Event:new.html.twig', array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         ));
     }
 
@@ -66,6 +68,8 @@ class EventController extends Controller
      */
     private function createCreateForm(Event $entity)
     {
+        $this->enforceUserSecurity();
+
         $form = $this->createForm(new EventType(), $entity, array(
             'action' => $this->generateUrl('event_create'),
             'method' => 'POST',
@@ -82,12 +86,14 @@ class EventController extends Controller
      */
     public function newAction()
     {
+        $this->enforceUserSecurity();
+
         $entity = new Event();
-        $form   = $this->createCreateForm($entity);
+        $form = $this->createCreateForm($entity);
 
         return $this->render('EventBundle:Event:new.html.twig', array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         ));
     }
 
@@ -108,7 +114,7 @@ class EventController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return $this->render('EventBundle:Event:show.html.twig', array(
-            'entity'      => $entity,
+            'entity' => $entity,
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -119,6 +125,8 @@ class EventController extends Controller
      */
     public function editAction($id)
     {
+        $this->enforceUserSecurity();
+
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('EventBundle:Event')->find($id);
@@ -131,19 +139,19 @@ class EventController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return $this->render('EventBundle:Event:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
     }
 
     /**
-    * Creates a form to edit a Event entity.
-    *
-    * @param Event $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
+     * Creates a form to edit a Event entity.
+     *
+     * @param Event $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
     private function createEditForm(Event $entity)
     {
         $form = $this->createForm(new EventType(), $entity, array(
@@ -155,12 +163,15 @@ class EventController extends Controller
 
         return $form;
     }
+
     /**
      * Edits an existing Event entity.
      *
      */
     public function updateAction(Request $request, $id)
     {
+        $this->enforceUserSecurity();
+
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('EventBundle:Event')->find($id);
@@ -180,17 +191,20 @@ class EventController extends Controller
         }
 
         return $this->render('EventBundle:Event:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
     }
+
     /**
      * Deletes a Event entity.
      *
      */
     public function deleteAction(Request $request, $id)
     {
+        $this->enforceUserSecurity();
+
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 
@@ -222,7 +236,13 @@ class EventController extends Controller
             ->setAction($this->generateUrl('event_delete', array('id' => $id)))
             ->setMethod('DELETE')
             ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
-        ;
+            ->getForm();
+    }
+
+    public function enforceUserSecurity() {
+        $securityContext = $this->get('security.context');
+        if (!$securityContext->isGranted('ROLE_USER')) {
+            throw new AccessDeniedException('Need ROLE_USER!');
+        }
     }
 }

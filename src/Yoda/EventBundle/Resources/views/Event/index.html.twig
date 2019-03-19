@@ -1,28 +1,42 @@
 {% extends 'EventBundle::layout.html.twig' %}
 
 {% block body -%}
-    <h1>Event list</h1>
+<h1>Event list</h1>
+<header>
+    <a class="button" href="{{ path('event_new') }}">
+        Create a new event
+    </a>
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        <a class="button" href="{{ path('logout') }}">
+            Logout
+        </a>
+    {% else %}
+        <a class="button" href="{{ path('login_form') }}">
+            Login
+        </a>
+    {% endif %}
 
-    <table class="records_list">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th>Details</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td><a href="{{ path('event_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                <td>{{ entity.name }}</td>
-                <td>{% if entity.time %}{{ entity.time|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{{ entity.location }}</td>
-                <td>{{ entity.details }}</td>
-                <td>
+</header>
+<table class="records_list">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Time</th>
+        <th>Location</th>
+        <th>Details</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td><a href="{{ path('event_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+            <td>{{ entity.name }}</td>
+            <td>{% if entity.time %}{{ entity.time|date('Y-m-d H:i:s') }}{% endif %}</td>
+            <td>{{ entity.location }}</td>
+            <td>{{ entity.details }}</td>
+            <td>
                 <ul>
                     <li>
                         <a href="{{ path('event_show', { 'id': entity.id }) }}">show</a>
@@ -31,17 +45,9 @@
                         <a href="{{ path('event_edit', { 'id': entity.id }) }}">edit</a>
                     </li>
                 </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
 
-        <ul>
-        <li>
-            <a href="{{ path('event_new') }}">
-                Create a new entry
-            </a>
-        </li>
-    </ul>
     {% endblock %}

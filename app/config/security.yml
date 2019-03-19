@@ -1,31 +1,29 @@
 security:
-    encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
+  encoders:
+    Yoda\UserBundle\Entity\User: bcrypt
 
-    role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+  role_hierarchy:
+    ROLE_ADMIN:       ROLE_USER
+    ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
-    providers:
-        in_memory:
-            memory:
-                users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+  providers:
+    our_database_users:
+      entity: {class: UserBundle:User, property: username}
 
-    firewalls:
-        secured_area:
-            pattern:    ^/
-            form_login:
-                check_path: login_check
-                login_path: login_form
-            logout:
-                path:   logout # a route name
-                target: event  # a route for our homepage
-            anonymous: ~
-            #http_basic:
-            #    realm: "Secured Demo Area"
+  firewalls:
+    secured_area:
+      pattern:    ^/
+      form_login:
+        check_path: login_check
+        login_path: login_form
+      logout:
+        path:   logout # a route name
+        target: event  # a route for our homepage
+      anonymous: ~
+      #http_basic:
+      #    realm: "Secured Demo Area"
 
-    access_control:
-        - { path: ^/new, roles: ROLE_USER }
-        - { path: ^/create, roles: ROLE_USER }
+  access_control:
+# putting security in the controller instead
+#        - { path: ^/new, roles: ROLE_USER }
+#        - { path: ^/create, roles: ROLE_USER }
