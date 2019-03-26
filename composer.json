@@ -20,7 +20,8 @@
         "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
       "ext-json": "*",
-        "doctrine/doctrine-fixtures-bundle": "~2.2.0"
+        "doctrine/doctrine-fixtures-bundle": "~2.2.0",
+        "phpunit/phpunit": "^8.0"
     },
     "scripts": {
         "post-install-cmd": [
@@ -51,5 +52,8 @@
             "dev-master": "2.4-dev"
         },
         "symfony-assets-install": "symlink"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^4.2"
     }
 }
