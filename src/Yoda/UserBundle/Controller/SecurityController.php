@@ -11,9 +11,9 @@ namespace Yoda\UserBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Yoda\EventBundle\Controller\Controller;
 
 class SecurityController extends Controller
 {
@@ -49,7 +49,7 @@ class SecurityController extends Controller
     /**
      * @Route("/logout", name="logout")
      */
-    public function logoutction()
+    public function logoutAction()
     {
         //nothing here
     }
