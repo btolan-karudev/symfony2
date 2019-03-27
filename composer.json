@@ -21,7 +21,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
       "ext-json": "*",
         "doctrine/doctrine-fixtures-bundle": "~2.2.0",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^8.0",
+        "friendsofsymfony/user-bundle": "~2.0"
     },
     "scripts": {
         "post-install-cmd": [

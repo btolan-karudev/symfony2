@@ -26,14 +26,6 @@ class EventController extends Controller
      */
     public function indexAction()
     {
-        $user = $this->container->get('security.context')
-            ->getToken()
-            ->getUser();
-
-        $user = $this->getUser();
-
-        var_dump($user);die;
-
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('EventBundle:Event')->findAll();
@@ -56,6 +48,9 @@ class EventController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $user = $this->getUser();
+            $entity->setOwner($user);
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -143,6 +138,8 @@ class EventController extends Controller
             throw $this->createNotFoundException('Unable to find Event entity.');
         }
 
+        $this->enforceOwnerSecurity($entity);
+
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
@@ -188,6 +185,8 @@ class EventController extends Controller
             throw $this->createNotFoundException('Unable to find Event entity.');
         }
 
+        $this->enforceOwnerSecurity($entity);
+
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
@@ -224,6 +223,8 @@ class EventController extends Controller
                 throw $this->createNotFoundException('Unable to find Event entity.');
             }
 
+            $this->enforceOwnerSecurity($entity);
+
             $em->remove($entity);
             $em->flush();
         }
@@ -247,10 +248,20 @@ class EventController extends Controller
             ->getForm();
     }
 
-    public function enforceUserSecurity($role = 'ROLE_USER') {
+    public function enforceUserSecurity($role = 'ROLE_USER')
+    {
         $securityContext = $this->get('security.context');
         if (!$securityContext->isGranted($role)) {
-            throw new AccessDeniedException('Need '.$role);
+            throw new AccessDeniedException('Need ' . $role);
+        }
+    }
+
+    public function enforceOwnerSecurity(Event $event)
+    {
+        $user = $this->getUser();
+
+        if ($user != $event->getOwner()) {
+            throw new AccessDeniedException('You do not own this!');
         }
     }
 }
