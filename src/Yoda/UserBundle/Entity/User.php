@@ -37,7 +37,7 @@ class User implements AdvancedUserInterface, \Serializable
 
     /**
      * @var string
-     * @Assert\NotBlank()
+     * @Assert\NotBlank
      * @Assert\Email
      * @ORM\Column(name="email", type="string", length=255)
      */

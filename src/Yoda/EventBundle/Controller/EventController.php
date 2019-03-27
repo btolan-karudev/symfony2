@@ -26,10 +26,15 @@ class EventController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $user = $this->container->get('security.context')
+            ->getToken()
+            ->getUser();
 
-//        $userRepo = $em->getRepository('UserBundle:User');
-//        var_dump($userRepo->findOneByUsernameOrEmail('darth@deathstar.com'));die;
+        $user = $this->getUser();
+
+        var_dump($user);die;
+
+        $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('EventBundle:Event')->findAll();
 
@@ -44,6 +49,8 @@ class EventController extends Controller
      */
     public function createAction(Request $request)
     {
+        $this->enforceUserSecurity('ROLE_EVENT_CREATE');
+
         $entity = new Event();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -71,8 +78,6 @@ class EventController extends Controller
      */
     private function createCreateForm(Event $entity)
     {
-        $this->enforceUserSecurity();
-
         $form = $this->createForm(new EventType(), $entity, array(
             'action' => $this->generateUrl('event_create'),
             'method' => 'POST',
@@ -89,7 +94,7 @@ class EventController extends Controller
      */
     public function newAction()
     {
-        $this->enforceUserSecurity();
+        $this->enforceUserSecurity('ROLE_EVENT_CREATE');
 
         $entity = new Event();
         $form = $this->createCreateForm($entity);
@@ -242,10 +247,10 @@ class EventController extends Controller
             ->getForm();
     }
 
-    public function enforceUserSecurity() {
+    public function enforceUserSecurity($role = 'ROLE_USER') {
         $securityContext = $this->get('security.context');
-        if (!$securityContext->isGranted('ROLE_USER')) {
-            throw new AccessDeniedException('Need ROLE_USER!');
+        if (!$securityContext->isGranted($role)) {
+            throw new AccessDeniedException('Need '.$role);
         }
     }
 }
