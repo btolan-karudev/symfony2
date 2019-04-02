@@ -47,7 +47,15 @@ class EventController extends Controller
 
         if ($form->isValid()) {
             $user = $this->getUser();
+            //his works
+            //this is setting the owning side of the relationship
             $entity->setOwner($user);
+
+            //this would do nothing
+            // it sets the inversed side
+//            $events = $user->getEvents();
+//            $events[] = $entity;
+//            $user->setEvents($events);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
